@@ -1,8 +1,10 @@
 import streamlit as st
 import requests
 import json
+import os
 
-API_URL = "https://your-api-gateway-endpoint.amazonaws.com/prod/inference"  # Replace with your actual API Gateway endpoint
+API_URL = os.getenv("API_URL")  # Replace with your actual API Gateway endpoint
+API_KEY = os.getenv("API_KEY")  # Replace with your actual API key if needed
 
 st.set_page_config(page_title="Inference App", layout="wide")
 st.title("Inference Application")
@@ -16,8 +18,13 @@ if st.button("Generate Response"):
         with st.spinner("Calling LLM..."):
             try:
                 payload = {"inputs": prompt}
+                
+                headers = {
+                "x-api-key": API_KEY,
+                "Content-Type": "application/json"
+               }
 
-                response = requests.post(API_URL, json=payload)
+                response = requests.post(API_URL, json=payload, headers=headers)
 
                 if response.status_code == 200:
                     data = response.json()
